@@ -1,5 +1,7 @@
 import os
 import shutil
+import jinja2
+import numpy
 
 from nbgrader.exchange.abc import ExchangeFetchAssignment as ABCExchangeFetchAssignment
 from nbgrader.exchange.default import Exchange
@@ -75,6 +77,22 @@ class ExchangeFetchAssignment(Exchange, ABCExchangeFetchAssignment):
             self.copy_if_missing(src, dest, ignore=shutil.ignore_patterns(*self.coursedir.ignore))
         else:
             shutil.copytree(src, dest, ignore=shutil.ignore_patterns(*self.coursedir.ignore))
+            
+        template_loader = jinja2.FileSystemLoader(searchpath=dest)
+        template_env = jinja2.Environment(loader=template_loader)
+        for dirpath, dirnames, filenames in os.walk(dest):
+            for filename in filenames:
+                if filename[-6:] == ".ipynb":
+                    abs_path = os.path.join(dirpath, filename)
+                    rel_path = os.path.relpath(abs_path, dest)
+                    self.log.info(f"Rendering: {rel_path}")
+                    template = template_env.get_template(rel_path)
+                    out = template.render(np=numpy)
+                    with open(abs_path, "w") as out_file:
+                        out_file.write(out)
+                
+                
+            
 
     def copy_files(self):
         self.log.info("Source: {}".format(self.src_path))
