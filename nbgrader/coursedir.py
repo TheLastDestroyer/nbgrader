@@ -234,6 +234,7 @@ class CourseDirectory(LoggingConfigurable):
             "*.pyc",
             "__pycache__",
             "feedback",
+            "*.rendered.ipynb"
         ],
         help=dedent(
             """

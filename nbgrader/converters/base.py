@@ -4,6 +4,8 @@ import re
 import shutil
 import sqlalchemy
 import traceback
+import jinja2
+import numpy
 
 from rapidfuzz import fuzz
 from traitlets.config import LoggingConfigurable, Config
@@ -163,6 +165,16 @@ class BaseConverter(LoggingConfigurable):
 
         # write out the results
         self.writer.write(output, resources, notebook_name=resources['unique_key'])
+        base_path = (os.path.join("release", resources["nbgrader"]["assignment"], resources["unique_key"]))
+        template_path = base_path + ".ipynb"
+        rendered_path = base_path + ".rendered.ipynb"
+
+        template_loader = jinja2.FileSystemLoader(searchpath=os.getcwd())
+        template_env = jinja2.Environment(loader=template_loader)
+        template = template_env.get_template(template_path)
+        out = template.render(np=numpy)
+        with open(rendered_path, "w") as out_file:
+            out_file.write(out)
 
     def init_destination(self, assignment_id: str, student_id: str) -> bool:
         """Initialize the destination for an assignment. Returns whether the
