@@ -1,3 +1,13 @@
+# CHANGES IN THIS VERSION
+- When fetching from exchange notebooks are rendered as jinja2 templates to allow for randomisation
+- When produsing feedback tests are not shown
+
+Changed Files:
+- nbgrader/exchange/default/fetch_assignment.py
+- nbgrader/converters/base.py
+- nbgrader/coursedir.py
+- nbgrader/server_extensions/formgrader/templates/feedback.tpl
+
 # nbgrader
 
 Linux: [![TravisCI](https://travis-ci.org/jupyter/nbgrader.svg?branch=master)](https://travis-ci.org/jupyter/nbgrader)  
