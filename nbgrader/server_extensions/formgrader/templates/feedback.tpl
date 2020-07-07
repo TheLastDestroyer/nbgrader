@@ -228,12 +228,22 @@ span.nbgrader-label {
 {% endblock markdowncell %}
 
 {% block input %}
-  {%- if 'nbgrader' in cell.metadata and (cell.metadata.nbgrader.solution or cell.metadata.nbgrader.grade) -%}
+  {%- if 'nbgrader' in cell.metadata and cell.metadata.nbgrader.solution -%}
   <div class="panel panel-primary nbgrader_cell">
     {{ nbgrader_heading(cell) }}
     <div class="panel-body">
       <div class="input_area">
         {{ cell.source | highlight_code(metadata=cell.metadata) }}
+      </div>
+    </div>
+    {{ nbgrader_footer(cell) }}
+  </div>
+  {%- elif 'nbgrader' in cell.metadata and cell.metadata.nbgrader.grade -%}
+  <div class="panel panel-primary nbgrader_cell">
+    {{ nbgrader_heading(cell) }}
+    <div class="panel-body">
+      <div class="input_area">
+        Plese see the below for feedback.
       </div>
     </div>
     {{ nbgrader_footer(cell) }}
@@ -249,3 +259,9 @@ span.nbgrader-label {
   {%- endif -%}
 
 {% endblock input %}
+
+{% block error %}
+{%- if not ('nbgrader' in cell.metadata and cell.metadata.nbgrader.grade) -%}
+ {{ super() }}
+{%- endif -%}
+{% endblock error %}
