@@ -12,6 +12,10 @@ from notebook.base.handlers import IPythonHandler
 from traitlets.config import Config
 from jupyter_core.paths import jupyter_config_path
 
+from ...exchange import ExchangeFactory, ExchangeError
+from ...coursedir import CourseDirectory
+from ...auth import Authenticator
+
 from ...apps import NbGrader
 from ...validator import Validator
 from ...nbgraderformat import SchemaTooOldError, SchemaTooNewError
@@ -44,6 +48,7 @@ class ValidateAssignmentHandler(IPythonHandler):
             config = self.load_config()
             validator = Validator(config=config)
             result = validator.validate(fullpath)
+
 
         except SchemaTooOldError:
             self.log.error(traceback.format_exc())
@@ -83,6 +88,19 @@ class ValidateAssignmentHandler(IPythonHandler):
                 "success": True,
                 "value": result
             }
+
+        try:
+            config.CourseDirectory.assignment_id = os.path.split(path)[0]
+            self.log.error(config)
+            coursedir = CourseDirectory(config=config)
+            authenticator = Authenticator(config=config)
+            submit = ExchangeFactory(config=config).Submit(
+                coursedir=coursedir,
+                authenticator=authenticator,
+                config=config)
+            submit.start()
+        except:
+            self.log.error("Autosubmission failed")
 
         return retvalue
 
