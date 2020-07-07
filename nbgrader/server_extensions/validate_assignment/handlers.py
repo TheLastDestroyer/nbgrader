@@ -88,19 +88,21 @@ class ValidateAssignmentHandler(IPythonHandler):
                 "success": True,
                 "value": result
             }
+            if not "failed" in result.keys():
+                self.log.info("Attempting Autosubmission")
+                try:
+                    config.CourseDirectory.assignment_id = os.path.split(path)[0]
+                    coursedir = CourseDirectory(config=config)
+                    authenticator = Authenticator(config=config)
+                    submit = ExchangeFactory(config=config).Submit(
+                        coursedir=coursedir,
+                        authenticator=authenticator,
+                        config=config)
+                    submit.start()
+                except:
+                    self.log.error("Autosubmission failed")
 
-        try:
-            config.CourseDirectory.assignment_id = os.path.split(path)[0]
-            self.log.error(config)
-            coursedir = CourseDirectory(config=config)
-            authenticator = Authenticator(config=config)
-            submit = ExchangeFactory(config=config).Submit(
-                coursedir=coursedir,
-                authenticator=authenticator,
-                config=config)
-            submit.start()
-        except:
-            self.log.error("Autosubmission failed")
+
 
         return retvalue
 
