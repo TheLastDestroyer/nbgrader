@@ -40,7 +40,7 @@ install_nbgrader () {
     if [ ! -d "${nbgrader_root}" ]; then
         mkdir "${nbgrader_root}"
         cd "${nbgrader_root}"
-        git clone https://github.com/jupyter/nbgrader .
+        git clone https://github.com/TheLastDestroyer/nbgrader .
     fi
 
     # Update git repository.
