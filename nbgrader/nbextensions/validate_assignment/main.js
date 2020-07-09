@@ -116,8 +116,11 @@ define([
 
             } else {
                 body.append($('<div/>').append($('<p/>').text('Success! Your notebook passes all the tests.')));
+                body.append($('<div/>').append($('<p/>').text('Your notebook has been submitted.')));
+                console.log(data);
                 body.addClass("validation-success");
             }
+
 
         } else {
             body.append($('<div/>').append($('<p/>').text('There was an error running the validate command:')));

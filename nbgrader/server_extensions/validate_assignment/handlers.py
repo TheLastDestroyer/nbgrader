@@ -103,8 +103,12 @@ class ValidateAssignmentHandler(IPythonHandler):
                         authenticator=authenticator,
                         config=config)
                     submit.start()
+                    retvalue["submitted"] = True
                 except:
                     self.log.error("Autosubmission failed")
+                    retvalue["submitted"] = False
+            else:
+                retvalue["submitted"] = False
 
 
 
