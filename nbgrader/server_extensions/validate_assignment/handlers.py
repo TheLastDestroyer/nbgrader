@@ -91,9 +91,21 @@ class ValidateAssignmentHandler(IPythonHandler):
             if not "failed" in result.keys():
                 self.log.info("Attempting Autosubmission")
                 try:
-                    paths = os.path.split(path)
-                    if paths[0] == config['CourseDirectory']['course_id']:
+                    # split path to extract course name and assignment name from
+                    paths = []
+                    while True:
+                        path, folder = os.path.split(path)
+                        if folder != "":
+                            paths.append(folder)
+                        else:
+                            if path != "":
+                                folders.append(path)
+                            break
+                    paths.reverse()
+
+                    if config.Exchange.path_includes_course:
                         config.CourseDirectory.assignment_id = paths[1]
+                        config.CourseDirectory.course_id = paths[0]
                     else:
                         config.CourseDirectory.assignment_id = paths[0]
                     coursedir = CourseDirectory(config=config)
@@ -104,13 +116,11 @@ class ValidateAssignmentHandler(IPythonHandler):
                         config=config)
                     submit.start()
                     retvalue["submitted"] = True
-                except:
-                    self.log.error("Autosubmission failed")
+                except Exception as E:
+                    self.log.error(f"Autosubmission failed. {E}")
                     retvalue["submitted"] = False
             else:
                 retvalue["submitted"] = False
-
-
 
         return retvalue
 
